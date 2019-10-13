@@ -1,0 +1,21 @@
+# frozen_string_literal: true
+
+# name: permit-api-cors
+# about: Allow CORS to accept Api-Key and Api-Username headers
+# version: 0.1
+# authors: James Kiesel (gdpelican)
+# url: https://github.com/gdpelican/permit-api-cors
+
+class ::Discourse::Cors
+  module AllowApiKey
+    HEADER_KEY = 'Access-Control-Allow-Headers'
+    HEADER_VALUES = ['Api-Key', 'Api-Username']
+
+    def apply_headers(cors_origins, env, headers)
+      result = super(cors_origins, env, headers)
+      result[HEADER_KEY] = result[HEADER_KEY].split(', ').concat(HEADER_VALUES).join(', ') if cors_origins.presence
+      result
+    end
+  end
+  singleton_class.prepend AllowApiKey
+end
